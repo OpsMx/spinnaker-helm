@@ -239,8 +239,7 @@ ingressGate:
 # spinnakerFeatureFlags:
 #   - artifacts
 #   - pipeline-templates
-spinnakerFeatureFlags:
-  - artifacts
+spinnakerFeatureFlags: []
 
 # Node labels for pod assignment
 # Ref: https://kubernetes.io/docs/user-guide/node-selection/

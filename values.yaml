@@ -282,9 +282,13 @@ minio:
     enabled: true
     name: "spinnaker"
   nodeSelector: {}
-# Uncomment if you don't want to create a PVC for minio
-#  persistence:
-#    enabled: false
+
+  # Minio persistent storage settings
+  persistence:
+    size: 30Gi
+    # Uncomment below line if you don't want to enable persistent storage
+    # for minio
+    # enabled: false
 
 # Google Cloud Storage
 gcs:

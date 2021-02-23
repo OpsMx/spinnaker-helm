@@ -285,7 +285,7 @@ minio:
 
   # Minio persistent storage settings
   persistence:
-    size: 30Gi
+    size: 10Gi
     # Uncomment below line if you don't want to enable persistent storage
     # for minio
     # enabled: false

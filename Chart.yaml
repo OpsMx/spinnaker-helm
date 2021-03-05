@@ -6,6 +6,7 @@ appVersion: 1.22.2
 home: http://spinnaker.io/
 sources:
 - https://github.com/spinnaker
+- https://github.com/OpsMx/spinnaker-helm
 - https://github.com/viglesiasce/images
 icon: https://pbs.twimg.com/profile_images/669205226994319362/O7OjwPrh_400x400.png
 maintainers:
@@ -17,3 +18,7 @@ maintainers:
   email: hello@dwardu.com
 - name: paulczar
   email: username.taken@gmail.com
+- name: abhinaybyrisetty
+  email: abhinay.byrisetty@opsmx.com
+- name: nirmalyasen
+  email: nirmalya@opsmx.com

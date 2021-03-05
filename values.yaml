@@ -1,7 +1,7 @@
 halyard:
   #spinnakerVersion: 1.22.2
   image:
-    repository: gcr.io/spinnaker-marketplace/halyard
+    repository: us-docker.pkg.dev/spinnaker-community/docker/halyard
     tag: 1.39.0
     pullSecrets: []
   # Set to false to disable persistence data volume for halyard

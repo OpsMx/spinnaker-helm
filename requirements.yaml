@@ -5,5 +5,4 @@ dependencies:
   condition: redis.enabled
 - name: minio
   version: 8.0.9
-  repository: https://helm.min.io/
   condition: minio.enabled

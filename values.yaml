@@ -1,4 +1,5 @@
 halyard:
+  # If spinnakerVersion is not specified appVersion in Chart.yml is chosen for Spinnaker
   #spinnakerVersion: 1.22.2
   image:
     repository: us-docker.pkg.dev/spinnaker-community/docker/halyard

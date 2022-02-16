@@ -33,15 +33,16 @@ spec:
         {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
         pathType: ImplementationSpecific
         {{- end }}
-        {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
-        service:
-          name: spin-deck
-          port:
-            number: 9000
-        {{- else }}
-        serviceName: spin-deck
-        servicePort: 9000
-        {{- end }}
+        backend:
+          {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+          service:
+            name: spin-deck
+            port:
+              number: 9000
+          {{- else }}
+          serviceName: spin-deck
+          servicePort: 9000
+          {{- end }}
 {{- if .Values.ingress.tls }}
   tls:
 {{ toYaml .Values.ingress.tls | indent 4 }}

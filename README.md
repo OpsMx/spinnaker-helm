@@ -30,7 +30,7 @@ Specify each parameter using the `--set key=value[,key=value]` argument to `helm
 Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,
 
 ```bash
-$ helm install --name my-release -f values.yaml stable/spinnaker
+$ helm install --name my-release -f values.yaml spinnaker/spinnaker
 ```
 
 > **Tip**: You can use the default [values.yaml](values.yaml)
@@ -172,7 +172,7 @@ your configuration data persists any node failures, reboots or upgrades.
 For example:
 
 ```shell
-$ helm install -n cd stable/spinnaker
+$ helm install -n cd spinnaker/spinnaker
 $ kubectl exec -it cd-spinnaker-halyard-0 bash
 spinnaker@cd-spinnaker-halyard-0:/workdir$ hal version list
 ```

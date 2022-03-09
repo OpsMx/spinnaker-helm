@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - 'Chart.yaml'
-      - 'Chart.lock'
+      - 'requirements.lock'
 
 jobs:
   release:

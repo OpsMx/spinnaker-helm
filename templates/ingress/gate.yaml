@@ -1,5 +1,9 @@
 {{- if .Values.ingressGate.enabled }}
+{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1
+{{- else -}}
 apiVersion: extensions/v1beta1
+{{- end }}
 kind: Ingress
 metadata:
 {{- if .Values.ingressGate.annotations }}
@@ -10,6 +14,9 @@ metadata:
   labels:
 {{ include "spinnaker.standard-labels" . | indent 4 }}
 spec:
+  {{- if and .Values.ingress.className (semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- end }}
   rules:
   - host: {{ .Values.ingressGate.host | quote }}
     http:
@@ -23,9 +30,19 @@ spec:
       {{- else}}{{/* Has no annotations */}}
       - path: /
       {{- end }}
+        {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+        pathType: ImplementationSpecific
+        {{- end }}
         backend:
+          {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+          service:
+            name: spin-gate
+            port:
+              number: 8084
+          {{- else }}
           serviceName: spin-gate
           servicePort: 8084
+          {{- end }}
 {{- if .Values.ingressGate.tls }}
   tls:
 {{ toYaml .Values.ingressGate.tls | indent 4 }}

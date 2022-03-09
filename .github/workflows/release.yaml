@@ -5,8 +5,8 @@ on:
     branches:
       - main
     paths:
-      - 'charts/oes/Chart.yaml'
-      - 'charts/oes/Chart.lock'
+      - 'Chart.yaml'
+      - 'Chart.lock'
 
 jobs:
   release:

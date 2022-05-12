@@ -103,6 +103,7 @@ data:
       {{ if $registry.username -}} --username {{ $registry.username }} \
       {{ if $registry.passwordCommand -}} --password-command "{{ $registry.passwordCommand }}"{{ else -}} --password-file /opt/registry/passwords/{{ $registry.name }}{{- end }} \
       {{ if $registry.email -}} --email {{ $registry.email }}{{- end -}}{{- end }} \
+      {{ if $registry.noValidate -}} --no-validate {{- end }} \
       {{ if $registry.repositories -}} --repositories {{ range $index, $repository := $registry.repositories }}{{if $index}},{{end}}{{- $repository }}{{- end }}{{- end }}
 
     {{- end }}

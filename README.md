@@ -15,7 +15,7 @@ For more information on Spinnaker and its capabilities, see it's [documentation]
 To install the chart with the release name `my-release`:
 
 ```bash
-$ helm repo add spinnaker https://helmcharts.opsmx.com/
+$ helm repo add spinnaker https://opsmx.github.io/spinnaker-helm/
 $ helm install --name my-release spinnaker/spinnaker --timeout 600
 ```
 

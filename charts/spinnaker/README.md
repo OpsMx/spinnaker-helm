@@ -16,7 +16,7 @@ To install the chart with the release name `my-release`:
 
 ```bash
 $ helm repo add spinnaker https://opsmx.github.io/spinnaker-helm/
-$ helm install --name my-release spinnaker/spinnaker --timeout 600
+$ helm install --name my-release spinnaker/spinnaker --timeout 800
 ```
 
 Note that this chart pulls in many different Docker images so can take a while to fully install.

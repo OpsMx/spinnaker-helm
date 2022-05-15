@@ -67,6 +67,5 @@ halyard:
           --keystore-password "$KEYSTORE_PASSWORD" \
           --metadata "$METADATA_FILE" \
           --issuer-id "$GATE_URL" \
-          --no-validate \
           --service-address-url "$GATE_URL"
         $HAL_COMMAND config security authn saml enable

@@ -3,7 +3,7 @@ dependencies:
   repository: https://charts.bitnami.com/bitnami
   version: 10.5.3
 - name: minio
-  repository: https://helm.min.io/
+  repository: ""
   version: 8.0.9
-digest: sha256:2d520d20e7c5cdd63f01b8b237d43ff89c11195d5c0bdfd6343f205f462bab54
-generated: "2021-01-21T17:44:17.007069974+05:30"
+digest: sha256:a8fac9d991923a597e2cf167618e14a2b35bdd42e4929d664b52b3645754d85f
+generated: "2022-05-15T11:43:27.247551+02:00"

@@ -11,7 +11,6 @@ data:
     # Wait for the Hal daemon to be ready
     export DAEMON_ENDPOINT=http://{{ template "spinnaker.fullname" . }}-halyard:8064
     export HAL_COMMAND="hal --daemon-endpoint $DAEMON_ENDPOINT"
-    until $HAL_COMMAND --ready; do sleep 10 ; done
 
     bash -xe /opt/halyard/scripts/config.sh
 

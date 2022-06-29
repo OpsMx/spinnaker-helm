@@ -103,10 +103,15 @@ halyard:
   # echo_echo.yml: |-
   #   ...
 
-  ## Uncomment if you want to add extra commands to the init script
+  ## Add extra commands to the init script
   ## run by the init container before halyard is started.
   ## The content will be passed through `tpl`, so value interpolation is supported.
-  # additionalInitScript: |-
+  additionalInitScript: |-
+    # Disable probe (which is enabled in 1.45+) because it breaks the client
+    # See the following links for more info:
+    # https://github.com/spinnaker/spinnaker/issues/6655
+    # https://github.com/spinnaker/halyard/pull/1955
+    printf 'management.health.probes.enabled: false\n' >> /tmp/config/halyard-local.yml
 
   ## Uncomment if you want to add annotations on halyard and install-using-hal pods
   # annotations:

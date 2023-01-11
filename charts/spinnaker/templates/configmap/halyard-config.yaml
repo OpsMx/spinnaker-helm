@@ -9,9 +9,18 @@ data:
     #!/bin/bash
 
     # Wait for the Hal daemon to be ready
+    {{- if and (semverCompare "<=1.26.6" .Chart.AppVersion) (semverCompare "<1.45.0" .Values.image.tag) }}
     export DAEMON_ENDPOINT=http://{{ template "spinnaker.fullname" . }}-halyard:8064
     export HAL_COMMAND="hal --daemon-endpoint $DAEMON_ENDPOINT"
     until $HAL_COMMAND --ready; do sleep 10 ; done
+    {{- else }}
+    export DAEMON_ENDPOINT='curl http://{{ .Release.Name }}-spinnaker-halyard:8064/health'
+    export HAL_COMMAND="$DAEMON_ENDPOINT"
+    until $HAL_COMMAND ; do sleep 10 ; done
+    {{- end }}
+
+    export DAEMON_ENDPOINT=http://{{ template "spinnaker.fullname" . }}-halyard:8064
+    export HAL_COMMAND="hal --daemon-endpoint $DAEMON_ENDPOINT"
 
     bash -xe /opt/halyard/scripts/config.sh
 

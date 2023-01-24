@@ -1,3 +1,8 @@
+global:
+  redis:
+    # Below is the password for redis connection to spinnaker
+    password: "password"
+
 halyard:
   # If spinnakerVersion is not specified appVersion in Chart.yml is chosen for Spinnaker
   #spinnakerVersion: 1.22.2

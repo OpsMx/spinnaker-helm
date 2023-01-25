@@ -1,4 +1,4 @@
-apiVersion: v1
+apiVersion: v2
 description: Open source, multi-cloud continuous delivery platform for releasing software changes with high velocity and confidence.
 name: spinnaker
 version: 2.2.13

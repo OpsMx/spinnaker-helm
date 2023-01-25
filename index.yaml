@@ -1,6 +1,42 @@
 apiVersion: v1
 entries:
   spinnaker:
+  - apiVersion: v2
+    appVersion: 1.28.3
+    created: "2023-01-25T09:13:21.080460474Z"
+    dependencies:
+    - condition: redis.enabled
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 16.13.1
+    - condition: minio.enabled
+      name: minio
+      repository: ""
+      version: 8.0.9
+    description: Open source, multi-cloud continuous delivery of v1.28.3 with new
+      artifact and halyard health endpoint support.
+    digest: 650fed23e165194a089b55c955d7a688eb79635868c366b04f0dde2e9a8de7e7
+    home: http://spinnaker.io/
+    icon: https://pbs.twimg.com/profile_images/669205226994319362/O7OjwPrh_400x400.png
+    maintainers:
+    - email: viglesias@google.com
+      name: viglesiasce
+    - email: ezimanyi@google.com
+      name: ezimanyi
+    - email: hello@dwardu.com
+      name: dwardu89
+    - email: username.taken@gmail.com
+      name: paulczar
+    - email: abhinay.byrisetty@hotmail.com
+      name: abhinaybyrisetty
+    name: spinnaker
+    sources:
+    - https://github.com/spinnaker
+    - https://github.com/OpsMx/spinnaker-helm
+    - https://github.com/viglesiasce/images
+    urls:
+    - https://github.com/OpsMx/spinnaker-helm/releases/download/spinnaker-2.2.13/spinnaker-2.2.13.tgz
+    version: 2.2.13
   - apiVersion: v1
     appVersion: 1.26.6
     created: "2022-06-30T20:39:24.386952099Z"
@@ -73,4 +109,4 @@ entries:
     urls:
     - https://github.com/OpsMx/spinnaker-helm/releases/download/spinnaker-2.2.10/spinnaker-2.2.10.tgz
     version: 2.2.10
-generated: "2022-06-30T20:39:24.3869697Z"
+generated: "2023-01-25T09:13:21.080474074Z"

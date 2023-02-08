@@ -40,10 +40,36 @@ spec:
     {{- end }}
       initContainers:
       - name: "create-halyard-local"
+      {{- if .Values.halyard.gitops.enabled }}
+        image: quay.io/opsmxpublic/awsgit:v3-js
+      {{- else }}
         image: {{ .Values.halyard.image.repository }}:{{ .Values.halyard.image.tag }}
+      {{- end }}
         command:
+        {{- if .Values.halyard.gitops.enabled }}
+        - sh
+        {{- else }}
         - bash
+        {{- end }}
         - /tmp/initscript/init.sh
+      {{- if .Values.halyard.gitops.enabled }}
+        env:
+        - name: GIT_CLONE_PARAM
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.halyard.gitops.secretName }}
+              key: gitcloneparam
+        - name: GIT_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.halyard.gitops.secretName }}
+              key: gituser
+        - name: GIT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.halyard.gitops.secretName }}
+              key: gittoken
+      {{- end }}
         volumeMounts:
         - name: halyard-config
           mountPath: /tmp/config
@@ -72,6 +98,20 @@ spec:
         env:
 {{ toYaml .Values.halyard.env | indent 8 }}
         {{- end }}
+      {{- if .Values.halyard.gitops.enabled }}
+      - name: "halyardconfig-update"
+        command:
+        - sh
+        - /tmp/akv2k8s/run.sh
+        image: quay.io/opsmxpublic/k8s-decoder:hal
+        imagePullPolicy: IfNotPresent
+        resources: {}
+        volumeMounts:
+        - name: halyard-home
+          mountPath: /tmp/spinnaker
+        - name: secret-decoder
+          mountPath: /tmp/akv2k8s
+      {{- end }}
       volumes:
       {{- if not .Values.halyard.persistence.enabled }}
       - name: halyard-home
@@ -150,6 +190,11 @@ spec:
           - key: cacerts
             path: cacerts
       {{- end }}
+      {{- if .Values.halyard.gitops.enabled }}
+      - name: secret-decoder
+        configMap:
+          name: {{ template "spinnaker.fullname" . }}-spin-secret-decoder
+      {{- end }}
       {{- if .Values.halyard.image.pullSecrets }}
       imagePullSecrets:
         {{- range .Values.halyard.image.pullSecrets }}
@@ -159,6 +204,12 @@ spec:
       containers:
       - name: halyard
         image: {{ .Values.halyard.image.repository }}:{{ .Values.halyard.image.tag }}
+        {{- if .Values.halyard.gitops.enabled }}
+        lifecycle:
+          postStart:
+            exec:
+              command: ["/bin/sh", "-c", "until curl http://localhost:8064/health; do sleep 10 ;done;hal deploy apply"]
+        {{- end }}
         ports:
         - containerPort: 8064
           name: daemon

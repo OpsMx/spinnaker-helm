@@ -4,6 +4,18 @@ global:
     password: "password"
 
 halyard:
+  gitops:
+    enabled: true
+    secretName: opsmx-gitops-auth
+    repo:
+      configArgs: "http.sslVerify=false"
+      username: git-username
+      token: git-token
+      baseUrlHostName: github.com
+      organization: OpsMx
+      repository: gitops-repo
+      dynamicAccRepository: gitops-repo
+      halConfigBranch: main
   # If spinnakerVersion is not specified appVersion in Chart.yml is chosen for Spinnaker
   spinnakerVersion: 1.28.3
   image:

@@ -9,18 +9,25 @@ data:
     #!/bin/bash
     {{- if .Values.halyard.gitops.enabled }}
     rm -rf /tmp/spinnaker/.hal
-    GIT_USER=`echo $GIT_USER | sed 's/ *$//g'`
-    GIT_TOKEN=`echo $GIT_TOKEN | sed 's/ *$//g'`
-    git -c {{ .Values.halyard.gitops.repo.configArgs }} clone $GIT_CLONE_PARAM -b {{ .Values.halyard.gitops.repo.halConfigBranch }} /tmp/spinnaker/test 2>/tmp/tmp.log
+    kubectl get secret opsmx-gitops-auth -n ${SPINNAKER_NAMESPACE}
     if [[ $? != 0 ]]; then
-       echo "ERROR: Failed while trying to execute:"
-       echo "git -c http.sslVerify=false clone $GIT_CLONE_PARAM -b {{ .Values.halyard.gitops.repo.halConfigBranch }} /tmp/spinnaker/test" | sed s/$GIT_TOKEN/\<TOKEN_REDACTED\>/g
-       sed s/$GIT_TOKEN/\<TOKEN_REDACTED\>/g /tmp/tmp.log
-       echo "####"
-       echo "Correct baseUrlHostName, organization, username, token and repository in values.yaml and re-execute 'helm upgrade --install ....' command"
-       echo "   It is possible that you need to use repoType as stash instead of git. Please check the documentation."
-       echo "To expedite the restart, wait for 60 seconds and delete the spinnaker-halyard-0 pod from another window"
+       echo "Opsmx Gitops Auth Secret not found"
+       echo "Please create a secret"
        exit 4
+    else
+      GIT_USER=`echo $GIT_USER | sed 's/ *$//g'`
+      GIT_TOKEN=`echo $GIT_TOKEN | sed 's/ *$//g'`
+      git -c {{ .Values.halyard.gitops.repo.configArgs }} clone $GIT_CLONE_PARAM -b {{ .Values.halyard.gitops.repo.halConfigBranch }} /tmp/spinnaker/test 2>/tmp/tmp.log
+      if [[ $? != 0 ]]; then
+         echo "ERROR: Failed while trying to execute:"
+         echo "git -c http.sslVerify=false clone $GIT_CLONE_PARAM -b {{ .Values.halyard.gitops.repo.halConfigBranch }} /tmp/spinnaker/test" | sed s/$GIT_TOKEN/\<TOKEN_REDACTED\>/g
+         sed s/$GIT_TOKEN/\<TOKEN_REDACTED\>/g /tmp/tmp.log
+         echo "####"
+         echo "Correct baseUrlHostName, organization, username, token and repository in values.yaml and re-execute 'helm upgrade --install ....' command"
+         echo "   It is possible that you need to use repoType as stash instead of git. Please check the documentation."
+         echo "To expedite the restart, wait for 60 seconds and delete the spinnaker-halyard-0 pod from another window"
+         exit 4
+      fi
     fi
     cp -r /tmp/spinnaker/test// /tmp/spinnaker/.hal
     rm -rf /tmp/spinnaker/test
@@ -28,6 +35,7 @@ data:
     if [ -f /tmp/spinnaker/.hal/halyard.yaml ]; then
     cp /tmp/spinnaker/.hal/halyard.yaml /tmp/config
     fi
+    sed -i s/SPINNAKER_NAMESPACE/${SPINNAKER_NAMESPACE}/ /tmp/spinnaker/.hal/config
     {{- else }}
     # Override Halyard daemon's listen address
     cp /opt/halyard/config/* /tmp/config

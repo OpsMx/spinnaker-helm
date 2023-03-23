@@ -75,7 +75,7 @@ For more information on Spinnaker and its capabilities, see it's [documentation]
 
 - In this method all the halyard configuration will be centralised in Git Repository.
  
-  -  Create an empty repo(called as "gitops-halyard") and clone to the local-machine.
+  -  Create an empty repo(called as "gitops-halyard") branch "main" as default, and clone to the local-machine.
      
   -  Clone the [repo](https://github.com/OpsMx/standard-gitops-halyard.git)
 

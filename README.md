@@ -29,7 +29,7 @@ For more information on Spinnaker and its capabilities, see it's [documentation]
    ```
   If helm is not setup, follow <https://helm.sh/docs/intro/install/> to install helm.
 
-## Installing with Non-Gitops Method
+## 1. Installing with Non-Gitops Method
 
 - Add spinnaker helm repo to your local machine
 
@@ -55,23 +55,8 @@ For more information on Spinnaker and its capabilities, see it's [documentation]
   ```
 > **Tip**: For more information of changing the default values file please [check](charts/spinnaker/additionalinfo.md)
   
-## Accessing the Spinnaker
 
-- Check the status of the pods by executing this command:
-
-  ```console
-  kubectl -n opsmx-oss get po
-  ```
-
-  Once all pods show "Running" or "Completed" status and Use port-forward command to access the Spinnaker:
-
-  ```console
-  kubectl -n opsmx-oss port-forward svc/spin-deck 9000  ## Keep running, it shows messages such as "Forwarding from 127.0.0.1:9000 -> 9000
-  ```
-
-  Now, open your browser and navigate to http://localhost:9000
-
-## Gitops Method
+## 2. Installing with Gitops Method
 
 - In this method all the halyard configuration will be centralised in Git Repository.
  
@@ -143,6 +128,22 @@ For more information on Spinnaker and its capabilities, see it's [documentation]
   ```
 
   **Note**: Make sure the same release name is used during installation.
+
+## Accessing the Spinnaker
+
+- Check the status of the pods by executing this command:
+
+  ```console
+  kubectl -n opsmx-oss get po
+  ```
+
+  Once all pods show "Running" or "Completed" status and Use port-forward command to access the Spinnaker:
+
+  ```console
+  kubectl -n opsmx-oss port-forward svc/spin-deck 9000  ## Keep running, it shows messages such as "Forwarding from 127.0.0.1:9000 -> 9000
+  ```
+
+  Now, open your browser and navigate to http://localhost:9000
 
 ## Securing Secret Credentails in the Halyard Git repo (Optional)
 

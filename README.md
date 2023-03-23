@@ -31,8 +31,6 @@ For more information on Spinnaker and its capabilities, see it's [documentation]
 
 ## Installing with Non-Gitops Method
 
-- Non-Gitops Method will install the Open Source Spinnaker.
-
 - Add spinnaker helm repo to your local machine
 
    ```console
@@ -67,7 +65,7 @@ For more information on Spinnaker and its capabilities, see it's [documentation]
   Once all pods show "Running" or "Completed" status and Use port-forward command to access the Spinnaker:
 
   ```console
-  kubectl -n opsmx-oss port-forward svc/spin-deck 9000  ## Keep running, it shows messages such as "Forwarding from 127.0.0.1:8080 -> 8080
+  kubectl -n opsmx-oss port-forward svc/spin-deck 9000  ## Keep running, it shows messages such as "Forwarding from 127.0.0.1:9000 -> 9000
   ```
 
   Now, open your browser and navigate to http://localhost:9000
@@ -80,9 +78,13 @@ For more information on Spinnaker and its capabilities, see it's [documentation]
  
   -  Create an empty repo(called as "gitops-halyard") and clone to the local-machine.
      
-  -  Clone https://github.com/OpsMx/standard-gitops-halyard.git
+  -  Clone the [repo](https://github.com/OpsMx/standard-gitops-halyard.git)
 
-  -  Copy contents of the standard-isd-repo to the gitops-repo created above using:
+     ```console
+     git clone https://github.com/OpsMx/standard-gitops-halyard.git
+     ```
+
+  -  Copy contents of the standard-gitops-halyard repo to the gitops-halyard repo
 
      ```console
      cp -r standard-gitops-halyard/* gitops-halyard # Replace "gitops-halyard" with your repo-name
@@ -92,9 +94,7 @@ For more information on Spinnaker and its capabilities, see it's [documentation]
      git add -A; git commit -m"Upgrade related changes";git push
      ```
 
-- Create a K8s secret - opsmx-gitops-auth
-
-  **Note**: The secret opsmx-gitops-auth stores the Git-repo URL and credential to access the repo in Halyard pod’s init script. It is important to keep the secret name as-is.
+- Create a K8s secret called opsmx-gitops-auth (Do not change the name of the secret)
 
 - Copy the below file and update the gituser, gittoken, and gitcloneparam (this includes username, token, organisation and git-repository) values.
 
@@ -106,9 +106,9 @@ For more information on Spinnaker and its capabilities, see it's [documentation]
   metadata:
     name: opsmx-gitops-auth
   stringData:
-    gitcloneparam: https://GIT_USERNAME:GIT_TOKEN@github.com/GIT_ORGANISATON/GIT_REPOSITORY.git  # Use your Git clone Https URL, Update the gitusername,gittoken,organisation and git repository
-    gittoken: xxxxxxxxxxxx # Update the Git token 
-    gituser: git-username  #Update the Username
+    gitcloneparam: https://GIT_USERNAME:GIT_TOKEN@github.com/GIT_ORGANISATON/GIT_REPOSITORY.git
+    gittoken: xxxxxxxxxxxx
+    gituser: git-username
   type: Opaque
    ```
 
@@ -162,7 +162,7 @@ For more information on Spinnaker and its capabilities, see it's [documentation]
   kubectl apply -f hal-secrets.yml -n opsmx-oss
   ```
 
-- Edit the hal config file (e.g: gitopsdir/config) and update every password/confidential text as per the format here.
+- Edit the hal config file (e.g: gitops-halyard/config) and update every password/confidential text as per the format here.
 
   - For passwords, the placeholder is
 
@@ -186,7 +186,7 @@ For more information on Spinnaker and its capabilities, see it's [documentation]
     github:
       enabled: true
       accounts: 
-      - name: opsmxdemo_account
+      - name: githubdemo_account
         username: "GITUSERNAME"
         token: "5cb4371fxxxxxxxxx5"
     ```
@@ -197,9 +197,9 @@ For more information on Spinnaker and its capabilities, see it's [documentation]
     github:
       enabled: true
       accounts: 
-      - name: opsmxdemo_account
-        username: "GITUSERNAME"
-        token: "encrypted:<K8s-SecretName>:<SecretKey>"
+      - name: githubdemo_account
+        username: "john"
+        token: "encrypted:hal-secrets:gitopstoken"
     ```
 
-    **Note**: After creating the secrets and updating the hal config file, you are now ready to commit the files to your remote git repository. Go ahead and complete it. Any changes you make in Halyard should be manually committed to Git repository; otherwise with every Halyard restart the changes will be gone and git repo content is the source of the truth for Halyard config.
+    **Note**: After creating the secrets and updating the hal config file, you are now ready to commit the files to your remote git repository. Go ahead and complete it. Any changes you make in Halyard should be manually committed to Git repository; otherwise with every Halyard restart the changes will be gone and git repo content is the source of the truth for Gitops Halyard repo.

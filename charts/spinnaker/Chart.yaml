@@ -1,8 +1,8 @@
 apiVersion: v2
 description: Open source, multi-cloud continuous delivery of v1.28.3 with new artifact and halyard health endpoint support.
 name: spinnaker
-version: 2.2.13
-appVersion: 1.28.3
+version: 2.2.14
+appVersion: 1.29.3
 home: http://spinnaker.io/
 sources:
 - https://github.com/spinnaker

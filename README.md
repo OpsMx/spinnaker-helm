@@ -10,302 +10,206 @@ Redis and Minio are used as the stores for Spinnaker state.
 
 For more information on Spinnaker and its capabilities, see it's [documentation](http://www.spinnaker.io/docs).
 
-## Installing the Chart
+## Setup Instructions
 
-To install the chart with the release name `my-release`:
+### Prerequisites
 
-```bash
-$ helm repo add spinnaker https://opsmx.github.io/spinnaker-helm/
-$ helm install --name my-release spinnaker/spinnaker --timeout 800
-```
+- Kubernetes cluster 1.20 or later with at least 4 cores and 16 GB memory.
+- Helm 3 is setup on the client system with 3.10.3 or later.
 
-Note that this chart pulls in many different Docker images so can take a while to fully install.
+## Helm Chart supports two modes of Installations
 
-## Configuration
+1. Non-Gitops Method
+2. Gitops Method
 
-Configurable values are documented in the `values.yaml`.
+- Use below command to check if helm is installed or not
+        
+   ```console
+   helm version
+   ```
+  If helm is not setup, follow <https://helm.sh/docs/intro/install/> to install helm.
 
-Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`.
+## Installing with Non-Gitops Method
 
-Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,
+- Add spinnaker helm repo to your local machine
 
-```bash
-$ helm install --name my-release -f values.yaml spinnaker/spinnaker
-```
-
-> **Tip**: You can use the default [values.yaml](values.yaml)
-
-## Adding Kubernetes Clusters to Spinnaker
-
-### Configuring arbitrary clusters with a kubernetes secret
-By default, installing the chart only registers the local cluster as a deploy target
-for Spinnaker. If you want to add arbitrary clusters need to do the following:
-
-1. Upload your kubeconfig to a secret with the key `config` in the cluster you are installing Spinnaker to.
-
-```shell
-$ kubectl create secret generic --from-file=$HOME/.kube/config my-kubeconfig
-```
-
-2. Set the following values of the chart:
-
-```yaml
-kubeConfig:
-  enabled: true
-  secretName: my-kubeconfig
-  secretKey: config
-  contexts:
-  # Names of contexts available in the uploaded kubeconfig
-  - my-context
-  # This is the context from the list above that you would like
-  # to deploy Spinnaker itself to.
-  deploymentContext: my-context
-```
-
-### Configuring arbitrary clusters with s3
-By default, installing the chart only registers the local cluster as a deploy target
-for Spinnaker. If you do not want to store your kubeconfig as a secret on the cluster, you
-can also store in s3. Full documentation can be found [here](https://www.spinnaker.io/reference/halyard/secrets/s3-secrets/#secrets-in-s3).
-
-1. Upload your kubeconfig to a s3 bucket that halyard and spinnaker services can access.
-
-
-2. Set the following values of the chart:
-
-```yaml
-kubeConfig:
-  enabled: true
-  # secretName: my-kubeconfig
-  # secretKey: config
-  encryptedKubeconfig: encrypted:s3!r:us-west-2!b:mybucket!f:mykubeconfig
-  contexts:
-  # Names of contexts available in the uploaded kubeconfig
-  - my-context
-  # This is the context from the list above that you would like
-  # to deploy Spinnaker itself to.
-  deploymentContext: my-context
-```
-
-## Specifying Docker Registries and Valid Images (Repositories)
-
-Spinnaker will only give you access to Docker images that have been whitelisted, if you're using a private registry or a private repository you also need to provide credentials.  Update the following values of the chart to do so:
-
-```yaml
-dockerRegistries:
-- name: dockerhub
-  address: index.docker.io
-  repositories:
-    - library/alpine
-    - library/ubuntu
-    - library/centos
-    - library/nginx
-# - name: gcr
-#   address: https://gcr.io
-#   username: _json_key
-#   password: '<INSERT YOUR SERVICE ACCOUNT JSON HERE>'
-#   email: 1234@5678.com
-# - name: ecr
-#   address: <AWS-ACCOUNT-ID>.dkr.ecr.<REGION>.amazonaws.com
-#   username: AWS
-#   passwordCommand: aws --region <REGION> ecr get-authorization-token --output text --query 'authorizationData[].authorizationToken' | base64 -d | sed 's/^AWS://'
-```
-
-You can provide passwords as a Helm value, or you can use a pre-created secret containing your registry passwords.  The secret should have an item per Registry in the format: `<registry name>: <password>`. In which case you'll specify the secret to use in `dockerRegistryAccountSecret` like so:
-
-```yaml
-dockerRegistryAccountSecret: myregistry-secrets
-```
-
-## Specifying persistent storage
-
-Spinnaker supports [many](https://www.spinnaker.io/setup/install/storage/) persistent storage types. Currently, this chart supports the following:
-
-* Azure Storage
-* Google Cloud Storage
-* Minio (local S3-compatible object store)
-* Redis
-* AWS S3
-
-## Use custom `cacerts`
-
-In environments with air-gapped setup, especially with internal tooling (repos) and self-signed certificates it is required to provide an adequate `cacerts` which overrides the default one:
-
-1. Create a yaml file `cacerts.yaml` with a secret that contanins the `cacerts`
-
-   ```yaml
-   apiVersion: v1
-   kind: Secret
-   metadata:
-     name: custom-cacerts
-   data:
-     cacerts: |
-       xxxxxxxxxxxxxxxxxxxxxxx
+   ```console
+   helm repo add spinnaker https://opsmx.github.io/spinnaker-helm/
    ```
 
-2. Upload your `cacerts.yaml` to a secret with the key you specify in `secretName` in the cluster you are installing Spinnaker to.
+  Note: If spinnaker helm repo is already added, do a repo update before installing the chart
 
-   ```shell
-   $ kubectl apply -f cacerts.yaml
+   ```console
+   helm repo update
+   ```
+- Use below command to create the namespace
+
+   ```console
+   kubectl create namespace opsmx-oss
    ```
 
-3. Set the following values of the chart:
+- Use below command to install the helm chart using Non-Gitops Method:
 
-   ```yaml
-   customCerts:
-      ## Enable to override the default cacerts with your own one
-      enabled: false
-      secretName: custom-cacerts
+  ```console
+  helm install oss-spin spinnaker/spinnaker -n opsmx-oss --timeout 600s
+  ```
+> **Tip**: For more information of changing the default values file please [check](charts/spinnaker/additionalinfo.md)
+  
+## Accessing the Spinnaker
+
+- Check the status of the pods by executing this command:
+
+  ```console
+  kubectl -n opsmx-oss get po
+  ```
+
+  Once all pods show "Running" or "Completed" status and Use port-forward command to access the Spinnaker:
+
+  ```console
+  kubectl -n opsmx-oss port-forward svc/spin-deck 9000  ## Keep running, it shows messages such as "Forwarding from 127.0.0.1:9000 -> 9000
+  ```
+
+  Now, open your browser and navigate to http://localhost:9000
+
+## Gitops Method
+
+- In this method all the halyard configuration will be centralised in Git Repository.
+ 
+  -  Create an empty repo(called as "gitops-halyard") branch "main" as default, and clone to the local-machine.
+     
+  -  Clone the [repo](https://github.com/OpsMx/standard-gitops-halyard.git)
+
+     ```console
+     git clone https://github.com/OpsMx/standard-gitops-halyard.git
+     ```
+
+  -  Copy contents of the standard-gitops-halyard repo to the gitops-halyard repo
+
+     ```console
+     cp -r standard-gitops-halyard/* gitops-halyard # Replace "gitops-halyard" with your repo-name
+     ```
+  - cd to the newley created repo 
+    
+    ```console
+    cd gitops-halyard
+    ```
+
+     ```console
+     git add -A; git commit -m"Upgrade related changes";git push
+     ```
+
+- Create a K8s secret called opsmx-gitops-auth (Do not change the name of the secret)
+
+- Copy the below file and update the gituser, gittoken, and gitcloneparam (this includes username, token, organisation and git-repository) values.
+
+  Format of the secret: opsmx-gitops-auth’s yaml file
+
+  ```yaml
+  apiVersion: v1
+  kind: Secret
+  metadata:
+    name: opsmx-gitops-auth
+  stringData:
+    gitcloneparam: https://GIT_USERNAME:GIT_TOKEN@github.com/GIT_ORGANISATON/GIT_REPOSITORY.git
+    gittoken: xxxxxxxxxxxx
+    gituser: git-username
+  type: Opaque
    ```
 
-## Customizing your installation
+  After updating the secret values(username, token, organisation and git-repository) looks as below
 
-### Manual
-While the default installation is ready to handle your Kubernetes deployments, there are
-many different integrations that you can turn on with Spinnaker. In order to customize
-Spinnaker, you can use the [Halyard](https://www.spinnaker.io/reference/halyard/) command line `hal`
-to edit the configuration and apply it to what has already been deployed.
+  ```yaml
+  apiVersion: v1
+  kind: Secret
+  metadata:
+    name: opsmx-gitops-auth
+  stringData:
+    gitcloneparam: https://jhon:ghbzceqed_adsfasdf@github.com/john/gitops-halyard.git
+    gittoken: ghbzceqed_adsfasdf
+    gituser: jhon
+  type: Opaque
+   ```
 
-Halyard has an in-cluster daemon that stores your configuration. You can exec a shell in this pod to
-make and apply your changes. The Halyard daemon is configured with a persistent volume to ensure that
-your configuration data persists any node failures, reboots or upgrades.
+- Use below command to apply the secrets yaml
+  
+  ```console
+  kubectl -n opsmx-oss apply -f secret.yaml
+  ```
 
-For example:
+- Use below command to upgrade oss to gitops method.
 
-```shell
-$ helm install -n cd spinnaker/spinnaker
-$ kubectl exec -it cd-spinnaker-halyard-0 bash
-spinnaker@cd-spinnaker-halyard-0:/workdir$ hal version list
-```
+  ```console
+  helm install oss-spin spinnaker/spinnaker --set halyard.gitops.enabled=true --timeout 600s -n opsmx-oss
+  ```
 
-### Automated
-If you have known set of commands that you'd like to run after the base config steps or if
-you'd like to override some settings before the Spinnaker deployment is applied, you can enable
-the `halyard.additionalScripts.enabled` flag. You will need to create a config map that contains a key
-containing the `hal` commands you'd like to run. You can set the key via the config map name via `halyard.additionalScripts.configMapName` and the key via `halyard.additionalScripts.configMapKey`. The `DAEMON_ENDPOINT` environment variable can be used in your custom commands to
-get a prepopulated URL that points to your Halyard daemon within the cluster. The `HAL_COMMAND` environment variable does this for you. For example:
+  **Note**: Make sure the same release name is used during installation.
 
-```shell
-hal --daemon-endpoint $DAEMON_ENDPOINT config security authn oauth2 enable
-$HAL_COMMAND config security authn oauth2 enable
-```
+## Securing Secret Credentails in the Halyard Git repo (Optional)
 
-If you need to give halyard additional parameters when it deploys Spinnaker, you can specify them with `halyard.additionalInstallParameters`.
+**Note**: Secrets in Halyard are plain-text, storing them as-is in Git repository is a security concern. Hence, we will replace all the Secrets/passwords in halyard config with a placeholder before committing them to the Git repository. During the halyard pod startup, these secrets are evaluated to their original value through an init container.
 
-If you would rather the chart make the config file for you, you can set `halyard.additionalScripts.create` to `true` and then populate `halyard.additionalScripts.data.SCRIPT_NAME.sh` with the bash script you'd like to run. If you need associated configmaps or secrets you can configure those to be created as well:
+- Create one or more K8s secrets in the same namespace where Spinnaker is running, with your credentials.
 
-```yaml
-halyard:
-  additionalScripts:
-    create: true
-    data:
-      enable_oauth.sh: |-
-        echo "Setting oauth2 security"
-        $HAL_COMMAND config security authn oauth2 enable
-  additionalSecrets:
-    create: true
-    data:
-      password.txt: aHVudGVyMgo=
-  additionalConfigMaps:
-    create: true
-    data:
-      metadata.xml: <xml><username>admin</username></xml>
-  additionalProfileConfigMaps:
-    create: true
-    data:
-      orca-local.yml: |-
-        tasks:
-          useManagedServiceAccounts: true
-```
+  ```console
+  kubectl -n opsmx-oss create secret generic <SecretName> --from-literal=<SecretKey>=<SecretValue> --from-file=myk8saccount-kube.config #File name becomes SecretKey
+   ```
 
-Any files added through `additionalConfigMaps` will be written to disk at `/opt/halyard/additionalConfigMaps`.
+- Or, Use below yaml file (hal-secrets.yml) to create the secret
+          
+  ```yaml
+  apiVersion: v1
+  kind: Secret
+  metadata:
+    name: hal-secrets
+  stringData:
+    prodjenkinspwd: jenkinspassword
+    gitopstoken: gittoken
+    myk8saccount-kube.config: <kubeconfig-content>
+  type: Opaque
+  ```
 
-### Use a custom Halyard BOM
+  ```console
+  kubectl -n opsmx-oss apply -f hal-secrets.yml
+  ```
 
-Spinnaker uses a Bill of Materials to describe the services that are part of a release. See the [BOM documentation](https://www.spinnaker.io/guides/operator/custom-boms/#the-bill-of-materials-bom) for more details.   
+- Edit the hal config file (e.g: gitops-halyard/config) and update every password/confidential text as per the format here.
 
-A [custom BOM](https://www.spinnaker.io/guides/operator/custom-boms/#boms-and-configuration-on-your-filesystem) can be provided to the Helm chart and used for the Halyard deployment: 
+  - For passwords, the placeholder is
 
-```yaml
-halyard:
-  spinnakerVersion: '1.16.1'
-  bom: |-
-    artifactSources:
-      debianRepository: https://dl.bintray.com/spinnaker-releases/debians
-      dockerRegistry: gcr.io/spinnaker-marketplace
-      gitPrefix: https://github.com/spinnaker
-      googleImageProject: marketplace-spinnaker-release
-    dependencies:
-      consul:
-        version: 0.7.5
-      redis:
-        version: 2:2.8.4-2
-      vault:
-        version: 0.7.0
-    services:
-      clouddriver:
-        commit: 031bcec52d6c3eb447095df4251b9d7516ed74f5
-        version: 6.3.0-20190904130744
-      deck:
-        commit: b0aac478e13a7f9642d4d39479f649dd2ef52a5a
-        version: 2.12.0-20190916141821
-      defaultArtifact: {}
-      echo:
-        commit: 7aae2141883240bd5747b981b2196adfa5b24225
-        version: 2.8.0-20190914075316
-      fiat:
-        commit: e92cfbcac018d9dcfa03869224f7106bf2a11315
-        version: 1.7.0-20190904130744
-      front50:
-        commit: abc5c168e3619ac084d4130eef7313cbdcfc3f61
-        version: 0.19.0-20190904130744
-      gate:
-        commit: fd0128a6b79ddaca984c3bcdd1259c14f167cd2d
-        version: 1.12.0-20190914075316
-      igor:
-        commit: c9bbca8e5c340d90b812f4fd27c6ebe3088dbc8d
-        version: 1.6.0-20190914075316
-      kayenta:
-        commit: 8aa41e6e723e8d37831f5d4fe0bd5aa24ede5872
-        version: 0.11.0-20190830172818
-      monitoring-daemon:
-        commit: 922385def92058877d61dfc835873539f0377cd7
-        version: 0.15.0-20190820135930
-      monitoring-third-party:
-        commit: 922385def92058877d61dfc835873539f0377cd7
-        version: 0.15.0-20190820135930
-      orca:
-        commit: 7b4e3dd6c4393ba88ebb3ea209a9c95df63e5e87
-        version: 2.10.0-20190914075316
-      rosco:
-        commit: cfb88bb57f7af064876cfe5eef3c330a2621507b
-        version: 0.14.0-20190904130744
-    timestamp: '2019-09-16 18:18:44'
-    version: 1.16.1
-```
+    ```console
+    encrypted:<K8s-SecretName>:<SecretKey>
+    ```
 
-This will result in the specified BOM contents being written to a `1.16.1.yml` BOM file, and the Spinnaker version set to `local:1.16.1`.  
+  - For kubeconfig and other confidential files, the placeholder is
 
-### Set custom annotations for the halyard pod
+    ```console
+    encryptedFile:<K8s-SecretName>:<SecretKey>
+    ```
 
-```yaml
-halyard:
-  annotations:
-    iam.amazonaws.com/role: <role_arn>
-```
+    **Note**: The K8s-SecretName and SecretKey should be matching the secret created.
 
-### Set custom annotations for the halyard serviceaccount
+- A sample of the Hal config - before GitOps and after GitOps
 
-```yaml
-serviceAccount:
-  serviceAccountAnnotations:
-    eks.amazonaws.com/role-arn: <role_arn>
-```
+  - Before GitOps - Sample:
 
-### Set environment variables on the halyard pod
+    ```yaml
+    github:
+      enabled: true
+      accounts: 
+      - name: githubdemo_account
+        username: "GITUSERNAME"
+        token: "5cb4371fxxxxxxxxx5"
+    ```
 
-```yaml
-halyard:
-  env:
-    - name: JAVA_OPTS
-      value: -Dhttp.proxyHost=proxy.example.com
-```
+  - After GitOps - Sample:
+
+    ```yaml
+    github:
+      enabled: true
+      accounts: 
+      - name: githubdemo_account
+        username: "john"
+        token: "encrypted:hal-secrets:gitopstoken"
+    ```
+
+    **Note**: After creating the secrets and updating the hal config file, you are now ready to commit the files to your remote git repository. Go ahead and complete it. Any changes you make in Halyard should be manually committed to Git repository; otherwise with every Halyard restart the changes will be gone and git repo content is the source of the truth for Gitops Halyard repo.

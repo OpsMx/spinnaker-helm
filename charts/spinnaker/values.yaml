@@ -11,7 +11,7 @@ halyard:
       configArgs: "http.sslVerify=false"
       halConfigBranch: main
   # If spinnakerVersion is not specified appVersion in Chart.yml is chosen for Spinnaker
-  spinnakerVersion: 1.28.3
+  spinnakerVersion: 1.29.3
   image:
     repository: us-docker.pkg.dev/spinnaker-community/docker/halyard
     tag: 1.45.0

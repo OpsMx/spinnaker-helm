@@ -77,8 +77,6 @@ For more information on Spinnaker and its capabilities, see it's [documentation]
 - In this method all the halyard configuration will be centralised in Git Repository.
 
 **Note**: It is not possible to enable GitOps before installing Spinnaker, hence you need to get your OSS Spinnaker up and running before enabling GitOps for its Halyard configuration and user need to have admin access to Git Organization or useraccount to create Git repositories.
-
-**Below are the steps to be followed**
  
   -  Create an empty repo(called as "gitops-halyard") and clone to the local-machine.
      

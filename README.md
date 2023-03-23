@@ -53,6 +53,7 @@ For more information on Spinnaker and its capabilities, see it's [documentation]
   ```console
   helm install oss-spin spinnaker/spinnaker -n opsmx-oss --timeout 600s
   ```
+> **Tip**: For more information of changing the default values file please [check](charts/spinnaker/additionalinfo.md)
   
 ## Accessing the Spinnaker
 

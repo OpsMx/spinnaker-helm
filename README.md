@@ -74,8 +74,6 @@ For more information on Spinnaker and its capabilities, see it's [documentation]
 ## Gitops Method
 
 - In this method all the halyard configuration will be centralised in Git Repository.
-
-**Note**: It is not possible to enable GitOps before installing Spinnaker, hence you need to get your OSS Spinnaker up and running before enabling GitOps for its Halyard configuration and user need to have admin access to Git Organization or useraccount to create Git repositories.
  
   -  Create an empty repo(called as "gitops-halyard") and clone to the local-machine.
      
@@ -141,7 +139,7 @@ For more information on Spinnaker and its capabilities, see it's [documentation]
 - Use below command to upgrade oss to gitops method.
 
   ```console
-  helm upgrade oss-spin spinnaker/spinnaker --set halyard.gitops.enabled=true --timeout 600s -n opsmx-oss
+  helm install oss-spin spinnaker/spinnaker --set halyard.gitops.enabled=true --timeout 600s -n opsmx-oss
   ```
 
   **Note**: Make sure the same release name is used during installation.

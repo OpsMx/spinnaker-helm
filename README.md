@@ -55,147 +55,50 @@ For more information on Spinnaker and its capabilities, see it's [documentation]
   ```console
   helm install oss-spin spinnaker/spinnaker -n opsmx-oss --timeout 600s
   ```
+  
+## Accessing the Spinnaker
 
-- Use below command to install/upgrade to the latest verion of Spinnaker using the helm chart.
+- Check the status of the pods by executing this command:
 
   ```console
-  helm upgrade --install oss-spin spinnaker/spinnaker --set halyard.spinnakerVersion=1.29.3 --timeout 600s -n opsmx-oss
+  kubectl -n opsmx-oss get po
   ```
 
-  **Note**: In the above command replace the 1.29.3 with appropriate spinnaker version so that it will install that particular version.
+  Once all pods show "Running" or "Completed" status and Use port-forward command to access the Spinnaker:
 
-## Converting OSS to Gitops Method
+  ```console
+  kubectl -n opsmx-oss port-forward svc/spin-deck 9000  ## Keep running, it shows messages such as "Forwarding from 127.0.0.1:8080 -> 8080
+  ```
+
+  Now, open your browser and navigate to http://localhost:9000
+
+## Gitops Method
 
 - In this method all the halyard configuration will be centralised in Git Repository.
 
 **Note**: It is not possible to enable GitOps before installing Spinnaker, hence you need to get your OSS Spinnaker up and running before enabling GitOps for its Halyard configuration and user need to have admin access to Git Organization or useraccount to create Git repositories.
 
 **Below are the steps to be followed**
-
-- Login to the halyard pod and take backup of the hal config
-
-  ```console
-  kubectl -n <namespace> exec -it <halyard-pod-name> -- bash
-  ```
-
-  ```console
-  cd /home/spinnaker
-  ```
-
-  ```console
-  hal backup create
-  ```
-   
-  The above command will output the log where you will find a line something like below
-   
-  `Successfully created backup at location: /home/spinnaker/halyard-2023-02-09_11-24-45-662Z.tar` 
-
-- Copy the tar to other file
-
-  ```console
-  cp /home/spinnaker/halyard-2023-02-09_11-24-45-662Z.tar halbkup.tar
-  ```
-
-- Copy the hal backup to local-machine
-
-  ```console
-  kubectl -n <namespace> cp <halyard-pod-name>:/home/spinnaker/halbkup.tar ./hal.tar
-  ```
-
-- A git-repository is required to store your Hal config files. 
  
-  -  Create an empty repo in your organisation(github/bitbucket/gitlab).
-
-  -  Clone it to your local-machine.
+  -  Create an empty repo(called as "gitops-halyard") and clone to the local-machine.
      
-     `git clone https://github.com/ORGANISATION/REPO_NAME.git`
+  -  Clone https://github.com/OpsMx/standard-gitops-halyard.git
 
-- Untar the backup file (hal.tar) to the git-repository directory.
+  -  Copy contents of the standard-isd-repo to the gitops-repo created above using:
 
-  ```console
-  tar -xvf hal.tar -C <REPO_NAME>
-  ```
+     ```console
+     cp -r standard-gitops-halyard/* gitops-halyard # Replace "gitops-halyard" with your repo-name
+     ```
 
-- The directory structure looks like this
-
-  ```dir
-  oss-hal/
-  ├── config
-  ├── default/
-  │   ├── profiles/
-  │   │   ├── front50-local.yml
-  │   │   ├── gate-local.yml
-  │   └── service-settings/
-  │       ├── deck.yml
-  │       ├── redis.yml
-  ├── halyard.yaml #Create this file using the content down below
-  └── README.md
-  ```
-
-- Create the halyard.yaml file in the same directory where the hal config file is present. Content of the file is as below:
-
-  ```yaml
-  server:
-    port: 8064
-  grpc:
-    enabled: false
-  halconfig:
-    filesystem:
-      path: ~/.hal/config
-  spinnaker:
-    artifacts:
-      debian: https://dl.bintray.com/spinnaker-releases/debians
-      docker: gcr.io/spinnaker-marketplace
-    config:
-      input:
-        gcs:
-          enabled: true
-        writerEnabled: false
-        bucket: halconfig
-  management:
-    endpoint:
-      shutdown:
-        enabled: true
-    endpoints:
-      web:
-        exposure:
-          include: shutdown, env, conditions, resolvedEnv, beans,health
-  backup:
-    google:
-      enabled: false
-  retrofit:
-    logLevel: BASIC
-  ```
-
-- Edit the hal config file and update the deploymentEnvironment.location value with literal string SPINNAKER_NAMESPACE 
-
-  Here is how it looks,
-
-  ```yaml
-  deploymentEnvironment:
-    size: "SMALL"
-    type: "Distributed"
-    accountName: "default"
-    imageVariant: "SLIM"
-    updateVersions: true
-    consul:
-      enabled: false
-    vault:
-      enabled: false
-    location: SPINNAKER_NAMESPACE #Keep this text
-  ```
-
-  **NOTE**: Do not commit any sensitive information(i.e credentials) to git repo.
-
-  ```console
-  git add -A; git commit -m"Upgrade related changes";git push
-  ```
+     ```console
+     git add -A; git commit -m"Upgrade related changes";git push
+     ```
 
 - Create a K8s secret - opsmx-gitops-auth
 
   **Note**: The secret opsmx-gitops-auth stores the Git-repo URL and credential to access the repo in Halyard pod’s init script. It is important to keep the secret name as-is.
 
-- Copy the below file and update the gituser, gittoken, and gitparam (this includes username, token, organisation and git-repository) values.
+- Copy the below file and update the gituser, gittoken, and gitcloneparam (this includes username, token, organisation and git-repository) values.
 
   Format of the secret: opsmx-gitops-auth’s yaml file
 
@@ -205,13 +108,13 @@ For more information on Spinnaker and its capabilities, see it's [documentation]
   metadata:
     name: opsmx-gitops-auth
   stringData:
-    gitcloneparam: https://GIT_USERNAME:GIT_TOKEN@github.com/GIT_ORGANISATON/GIT_REPOSITORY.git  # Use your Git clone Https URL, Update the        g  itusername,gittoken,organisation and git repository
+    gitcloneparam: https://GIT_USERNAME:GIT_TOKEN@github.com/GIT_ORGANISATON/GIT_REPOSITORY.git  # Use your Git clone Https URL, Update the gitusername,gittoken,organisation and git repository
     gittoken: xxxxxxxxxxxx # Update the Git token 
     gituser: git-username  #Update the Username
   type: Opaque
    ```
 
-  Sample reference for bitbucket secret: 
+  After updating the secret values(username, token, organisation and git-repository) looks as below
 
   ```yaml
   apiVersion: v1
@@ -219,30 +122,16 @@ For more information on Spinnaker and its capabilities, see it's [documentation]
   metadata:
     name: opsmx-gitops-auth
   stringData:
-    gitcloneparam: https://BITBUCKET_USERNAME:BITBUCKET_TOKEN@bitbucket.org/BITBUCKET_USERNAME/BITBUCKET_REPO.git
-    gittoken: USER_TOKEN  # Update the token 
-    gituser: USERNAME   # Update the Username
+    gitcloneparam: https://jhon:ghbzceqed_adsfasdf@github.com/john/gitops-halyard.git
+    gittoken: ghbzceqed_adsfasdf
+    gituser: jhon
   type: Opaque
-  ```
-
-  Sample reference for enterprise bitbucket secret:
-  
-  ```yaml
-  apiVersion: v1
-  kind: Secret
-  type: Opaque
-  metadata:
-    name: opsmx-gitops-auth
-  stringData:
-    gitcloneparam: https://USERNAME:TOKEN@<enterprisebitbuckethostname>/scm/projectName/BITBUCKET_REPO.git
-    gittoken: USER_TOKEN  # Update the token 
-    gituser: USERNAME  # Update the Username
-  ```
+   ```
 
 - Use below command to upgrade oss to gitops method.
 
   ```console
-  helm upgrade oss-spin spinnaker/spinnaker --set halyard.gitops.enabled=true --timeout 600s -n oss-spinnaker
+  helm upgrade oss-spin spinnaker/spinnaker --set halyard.gitops.enabled=true --timeout 600s -n opsmx-oss
   ```
 
   **Note**: Make sure the same release name is used during installation.
@@ -254,7 +143,7 @@ For more information on Spinnaker and its capabilities, see it's [documentation]
 - Create one or more K8s secrets in the same namespace where Spinnaker is running, with your credentials.
 
   ```console
-  kubectl -n <namespace> create secret generic <SecretName> --from-literal=<SecretKey>=<SecretValue> --from-file=myk8saccount-kube.config #File name       becomes SecretKey
+  kubectl -n opsmx-oss create secret generic <SecretName> --from-literal=<SecretKey>=<SecretValue> --from-file=myk8saccount-kube.config #File name becomes SecretKey
    ```
 
 - Or, Use below yaml file (hal-secrets.yml) to create the secret
@@ -265,14 +154,14 @@ For more information on Spinnaker and its capabilities, see it's [documentation]
   metadata:
     name: hal-secrets
   stringData:
-    prodjenkinspwd: <password>
-    gitopstoken: <git-token>
+    prodjenkinspwd: jenkinspassword
+    gitopstoken: gittoken
     myk8saccount-kube.config: <kubeconfig-content>
   type: Opaque
   ```
 
   ```console
-  kubectl apply -f hal-secrets.yml -n <namespace>
+  kubectl apply -f hal-secrets.yml -n opsmx-oss
   ```
 
 - Edit the hal config file (e.g: gitopsdir/config) and update every password/confidential text as per the format here.

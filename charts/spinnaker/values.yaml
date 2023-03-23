@@ -1,9 +1,20 @@
+global:
+  redis:
+    # Below is the password for redis connection to spinnaker
+    password: "password"
+
 halyard:
+  gitops:
+    enabled: false
+    secretName: opsmx-gitops-auth
+    repo:
+      configArgs: "http.sslVerify=false"
+      halConfigBranch: main
   # If spinnakerVersion is not specified appVersion in Chart.yml is chosen for Spinnaker
-  #spinnakerVersion: 1.22.2
+  spinnakerVersion: 1.29.3
   image:
     repository: us-docker.pkg.dev/spinnaker-community/docker/halyard
-    tag: 1.39.0
+    tag: 1.45.0
     pullSecrets: []
   # Set to false to disable persistence data volume for halyard
   persistence:

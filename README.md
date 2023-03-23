@@ -44,16 +44,22 @@ For more information on Spinnaker and its capabilities, see it's [documentation]
    ```console
    helm repo update
    ```
+- Use below command to create the namespace
+
+   ```console
+   kubectl create namespace opsmx-oss
+   ```
+
 - Use below command to install the helm chart using Non-Gitops Method:
 
   ```console
-  helm install oss-spin spinnaker/spinnaker -n oss-spinnaker --timeout 600s
+  helm install oss-spin spinnaker/spinnaker -n opsmx-oss --timeout 600s
   ```
 
 - Use below command to install/upgrade to the latest verion of Spinnaker using the helm chart.
 
   ```console
-  helm upgrade --install oss-spin spinnaker/spinnaker --set halyard.spinnakerVersion=1.29.3 --timeout 600s -n oss-spinnaker
+  helm upgrade --install oss-spin spinnaker/spinnaker --set halyard.spinnakerVersion=1.29.3 --timeout 600s -n opsmx-oss
   ```
 
   **Note**: In the above command replace the 1.29.3 with appropriate spinnaker version so that it will install that particular version.

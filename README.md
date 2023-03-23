@@ -90,6 +90,11 @@ For more information on Spinnaker and its capabilities, see it's [documentation]
      ```console
      cp -r standard-gitops-halyard/* gitops-halyard # Replace "gitops-halyard" with your repo-name
      ```
+  - cd to the newley created repo 
+    
+    ```console
+    cd gitops-halyard
+    ```
 
      ```console
      git add -A; git commit -m"Upgrade related changes";git push
@@ -127,6 +132,12 @@ For more information on Spinnaker and its capabilities, see it's [documentation]
   type: Opaque
    ```
 
+- Use below command to apply the secrets yaml
+  
+  ```console
+  kubectl -n opsmx-oss apply -f secret.yaml
+  ```
+
 - Use below command to upgrade oss to gitops method.
 
   ```console
@@ -160,7 +171,7 @@ For more information on Spinnaker and its capabilities, see it's [documentation]
   ```
 
   ```console
-  kubectl apply -f hal-secrets.yml -n opsmx-oss
+  kubectl -n opsmx-oss apply -f hal-secrets.yml
   ```
 
 - Edit the hal config file (e.g: gitops-halyard/config) and update every password/confidential text as per the format here.

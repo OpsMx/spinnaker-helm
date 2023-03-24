@@ -215,6 +215,6 @@ For more information on Spinnaker and its capabilities, see it's [documentation]
     **Note**: After creating the secrets and updating the hal config file, you are now ready to commit the files to your remote git repository. Go ahead and complete it. Any changes you make in Halyard should be manually committed to Git repository; otherwise with every Halyard restart the changes will be gone and git repo content is the source of the truth for Gitops Halyard repo.
     
 ## Support
-Limited Slack support is available on Spinnaker Slack (spinnakerteam.slack.com).
+Limited support is available on Spinnaker Slack (spinnakerteam.slack.com).
 
 Channel: opsmx

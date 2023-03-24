@@ -55,7 +55,7 @@ For more information on Spinnaker and its capabilities, see it's [documentation]
   ```
 > **Tip**: For more information of changing the default values file please [check](charts/spinnaker/additionalinfo.md)
   
-## Accessing the Spinnaker
+## Accessing Spinnaker after installation
 
 - Check the status of the pods by executing this command:
 
@@ -70,6 +70,8 @@ For more information on Spinnaker and its capabilities, see it's [documentation]
   ```
 
   Now, open your browser and navigate to http://localhost:9000
+
+Alternatively, you can route traffic via Ingress/LB to the spin-deck and spin-gate services. Details are **here**.
 
 ## Gitops Method
 

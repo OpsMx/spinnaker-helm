@@ -146,7 +146,7 @@ For more information on Spinnaker and its capabilities, see it's [documentation]
 
 ## Securing Secret Credentails in the Halyard Git repo (Optional)
 
-**Note**: Secrets in Halyard are plain-text, storing them as-is in Git repository is a security concern. Hence, we will replace all the Secrets/passwords in halyard config with a placeholder before committing them to the Git repository. During the halyard pod startup, these secrets are evaluated to their original value through an init container.
+**Note**: Secrets in Halyard are plain-text, storing them as-is in Git repository is a security concern. We can replace all the Secrets/passwords in halyard config with a placeholder before committing them to the Git repository. During the halyard pod startup, these secrets are evaluated to their original value through an init container.
 
 - Create one or more K8s secrets in the same namespace where Spinnaker is running, with your credentials.
 
@@ -213,3 +213,8 @@ For more information on Spinnaker and its capabilities, see it's [documentation]
     ```
 
     **Note**: After creating the secrets and updating the hal config file, you are now ready to commit the files to your remote git repository. Go ahead and complete it. Any changes you make in Halyard should be manually committed to Git repository; otherwise with every Halyard restart the changes will be gone and git repo content is the source of the truth for Gitops Halyard repo.
+    
+## Support
+Limited Slack support is available on Spinnaker Slack (spinnakerteam.slack.com).
+
+Channel: opsmx

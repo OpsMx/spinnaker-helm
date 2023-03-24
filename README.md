@@ -19,8 +19,8 @@ For more information on Spinnaker and its capabilities, see it's [documentation]
 
 ## Helm Chart supports two modes of Installations
 
-1. Non-Gitops Method
-2. Gitops Method
+1. Non-Gitops Method: This is the normal mode of Spinnaker Halyard, wherein all the configuration is inside Halyard
+2. Gitops Method: The Spinnaker configuration is stored in a git-repo, and the halyard syncs with the repo. While it involves an extra setup, during changes/upgrades, we can see exactly what is changing as all changes, include spinnaker configuration can be routed via git-PRs.
 
 - Use below command to check if helm is installed or not
         

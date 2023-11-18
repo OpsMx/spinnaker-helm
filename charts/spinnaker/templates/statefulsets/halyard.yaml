@@ -53,6 +53,7 @@ spec:
         {{- end }}
         - /tmp/initscript/init.sh
       {{- if .Values.halyard.gitops.enabled }}
+      {{- if (eq .Values.halyard.gitops.repo.type "git") }}
         env:
         - name: SPINNAKER_NAMESPACE
           valueFrom:
@@ -74,6 +75,34 @@ spec:
               name: {{ .Values.halyard.gitops.secretName }}
               key: gittoken
       {{- end }}
+      {{- end }}
+      {{- if and (.Values.halyard.gitops.enabled) (eq .Values.halyard.gitops.repo.type "s3") }}
+        env:
+        - name: SPINNAKER_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: S3_ACCESSKEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.halyard.gitops.secretName }}
+              key: s3accesskey
+        - name: S3_SECRETKEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.halyard.gitops.secretName }}
+              key: s3secretkey
+        - name: S3_BUCKET
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.halyard.gitops.secretName }}
+              key: s3bucket
+        - name: S3_REGION
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.halyard.gitops.secretName }}
+              key: s3region
+        {{- end }}
         volumeMounts:
         - name: halyard-config
           mountPath: /tmp/config
@@ -103,6 +132,7 @@ spec:
 {{ toYaml .Values.halyard.env | indent 8 }}
         {{- end }}
       {{- if .Values.halyard.gitops.enabled }}
+      {{- if or (eq .Values.halyard.gitops.repo.type "git") (eq .Values.halyard.gitops.repo.type "s3") }}
       - name: "halyardconfig-update"
         command:
         - sh
@@ -115,6 +145,7 @@ spec:
           mountPath: /tmp/spinnaker
         - name: secret-decoder
           mountPath: /tmp/akv2k8s
+      {{- end }}
       {{- end }}
       volumes:
       {{- if not .Values.halyard.persistence.enabled }}
@@ -195,9 +226,11 @@ spec:
             path: cacerts
       {{- end }}
       {{- if .Values.halyard.gitops.enabled }}
+      {{- if or (eq .Values.halyard.gitops.repo.type "git") (eq .Values.halyard.gitops.repo.type "s3") }}
       - name: secret-decoder
         configMap:
           name: {{ template "spinnaker.fullname" . }}-spin-secret-decoder
+      {{- end }}
       {{- end }}
       {{- if .Values.halyard.image.pullSecrets }}
       imagePullSecrets:

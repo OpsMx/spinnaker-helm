@@ -114,11 +114,11 @@ data:
     {{ tpl .Values.halyard.additionalInitScript $ | indent 4 }}
     {{- end }}
     
-    {{- end }}  # git or stash
+    {{- end }}  
 
 
 
- {{- if and (.Values.halyard.gitops.enabled) (eq .Values.halyard.gitops.repo.type "s3") }}
+   {{- if and (.Values.halyard.gitops.enabled) (eq .Values.halyard.gitops.repo.type "s3") }}
     #!/bin/bash -x
     rm -rf /tmp/spinnaker/.hal
     AWS_ACCESS_KEY_ID=$S3_ACCESSKEY AWS_SECRET_ACCESS_KEY=$S3_SECRETKEY aws s3 cp s3://$S3_BUCKET/config /tmp/spinnaker/.hal/config
@@ -153,4 +153,4 @@ data:
     if [ -f /tmp/spinnaker/.hal/halyard.yaml ]; then
     cp /tmp/spinnaker/.hal/halyard.yaml /tmp/config
     fi
-    {{- end }}  # End of S3
+    {{- end }} 

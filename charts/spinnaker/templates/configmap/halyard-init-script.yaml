@@ -39,6 +39,7 @@ data:
     fi
     sed -i s/SPINNAKER_NAMESPACE/${SPINNAKER_NAMESPACE}/ /tmp/spinnaker/.hal/config
     echo "Halyard is configured with Gitrepo"
+
     {{- else }}
     # Override Halyard daemon's listen address
     cp /opt/halyard/config/* /tmp/config
@@ -76,6 +77,43 @@ data:
     {{ tpl .Values.halyard.additionalInitScript $ | indent 4 }}
     {{- end }}
     {{- end }}
+    {{- else }}
+    # Override Halyard daemon's listen address
+    cp /opt/halyard/config/* /tmp/config
+    printf 'server.address: 0.0.0.0\n' > /tmp/config/halyard-local.yml
+
+    # Use Redis deployed via the dependent Helm chart
+    rm -rf /tmp/spinnaker/.hal/default/service-settings
+    mkdir -p /tmp/spinnaker/.hal/default/service-settings
+    cp /tmp/service-settings/* /tmp/spinnaker/.hal/default/service-settings/
+
+    rm -rf /tmp/spinnaker/.hal/default/profiles
+    mkdir -p /tmp/spinnaker/.hal/default/profiles
+    cp /tmp/additionalProfileConfigMaps/* /tmp/spinnaker/.hal/default/profiles/
+
+    rm -rf /tmp/spinnaker/.hal/.boms
+
+    {{- if .Values.halyard.bom }}
+    mkdir -p /tmp/spinnaker/.hal/.boms/bom
+    cp /tmp/halyard-bom/* /tmp/spinnaker/.hal/.boms/bom
+    {{- end }}
+
+    {{- if .Values.halyard.serviceConfigs }}
+    for filename in /tmp/service-configs/*; do
+      basename=$(basename -- "$filename")
+      fname="${basename#*_}"
+      servicename="${basename%%_*}"
+
+      mkdir -p "/tmp/spinnaker/.hal/.boms/$servicename"
+      cp "$filename" "/tmp/spinnaker/.hal/.boms/$servicename/$fname"
+    done
+    {{- end }}
+
+    {{- if hasKey .Values.halyard "additionalInitScript" }}
+    # additionalInitScript
+    {{ tpl .Values.halyard.additionalInitScript $ | indent 4 }}
+    {{- end }}
+    
     {{- end }}  # git or stash
 
 

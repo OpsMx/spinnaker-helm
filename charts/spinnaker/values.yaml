@@ -2,10 +2,14 @@ global:
   redis:
     # Below is the password for redis connection to spinnaker
     password: "password"
+  # Custom Images registry where all the OSS and customized images used in the helm chart are stored
+  # Only update this is using a private repo such as ACR, ECR, GCR, JFrog, etc.
+  customImages:
+    registry: quay.io/opsmxpublic
 
 halyard:
   gitops:
-    enabled: true
+    enabled: false
     secretName: opsmx-gitops-auth
     repo:
       type: git # git, bitbucket-stash or S3, please use another template for github/stash
@@ -372,3 +376,134 @@ securityContext:
   # Specifies permissions to write for user/group
   runAsUser: 1000
   fsGroup: 1000
+
+
+installOpenLdap: false
+## OpenLDAP custom configuration; will override default configuration of
+## openldap helm chart
+##
+openldap:
+  # Password for the admin user; by default it is set to admin
+  adminPassword: opsmxadmin123
+  configPassword: opsmxconfig123
+  omitClusterIP: true
+  persistence:
+    enabled: true
+  env:
+    LDAP_REMOVE_CONFIG_AFTER_SETUP: "false"
+
+  customLdifFiles:
+    01-memberof.ldif: |-
+      dn: cn=module,cn=config
+      cn: module
+      objectClass: olcModuleList
+      olcModuleLoad: memberof.la
+      olcModulePath: /usr/lib/ldap
+
+      dn: olcOverlay={0}memberof,olcDatabase={1}hdb,cn=config
+      objectClass: olcConfig
+      objectClass: olcMemberOf
+      objectClass: olcOverlayConfig
+      objectClass: top
+      olcOverlay: memberof
+      olcMemberOfDangling: ignore
+      olcMemberOfRefInt: TRUE
+      olcMemberOfGroupOC: groupOfNames
+      olcMemberOfMemberAD: member
+      olcMemberOfMemberOfAD: memberOf
+    02-refint1.ldif: |-
+      dn: cn=module{1},cn=config
+      changetype: modify
+      add: olcmoduleload
+      olcmoduleload: refint.la
+    03-refint2.ldif: |-
+      dn: olcOverlay={1}refint,olcDatabase={1}hdb,cn=config
+      objectClass: olcConfig
+      objectClass: olcOverlayConfig
+      objectClass: olcRefintConfig
+      objectClass: top
+      olcOverlay: {1}refint
+      olcRefintAttribute: memberof member manager owner
+    04-add_ou.ldif: |-
+      dn: ou=groups,dc=example,dc=org
+      objectClass: organizationalUnit
+      ou: Groups
+    05-admin.ldif: |-
+      dn: cn=admin,ou=groups,dc=example,dc=org
+      objectClass: groupofnames
+      cn: admin
+      description: read write and execute group
+      member: cn=admin,dc=example,dc=org
+    06-developer.ldif: |-
+      dn: cn=developers,ou=groups,dc=example,dc=org
+      objectClass: groupofnames
+      cn: developers
+      description: read only users
+      member: cn=admin,dc=example,dc=org
+      member: cn=developer,dc=example,dc=org
+    07-qa.ldif: |-
+      dn: cn=QA,ou=groups,dc=example,dc=org
+      objectClass: groupofnames
+      cn: QA
+      description: read only users
+      member: cn=admin,dc=example,dc=org
+      member: cn=qa,dc=example,dc=org
+    08-manager.ldif: |-
+      dn: cn=managers,ou=groups,dc=example,dc=org
+      objectClass: groupofnames
+      cn: managers
+      description: read and execute group
+      member: cn=admin,dc=example,dc=org
+      member: cn=manager,dc=example,dc=org
+    09-IT-manager.ldif: |-
+      dn: cn=ITManagers,ou=groups,dc=example,dc=org
+      objectClass: groupofnames
+      cn: ITManagers
+      description: read and execute group
+      member: cn=admin,dc=example,dc=org
+      member: cn=ITManager,dc=example,dc=org
+    10-users.ldif: |-
+      dn: cn=user1,dc=example,dc=org
+      objectClass: simpleSecurityObject
+      objectClass: organizationalRole
+      cn: user1
+      userpassword: {SSHA}Y9L4AsYL16WLK10qDZ62pTScFnaWb0nz
+
+      dn: cn=user2,dc=example,dc=org
+      objectClass: simpleSecurityObject
+      objectClass: organizationalRole
+      cn: user2
+      userpassword: {SSHA}DasTBI0eut1F83Bh1F1HXmDT8juJj3pY
+
+      dn: cn=user3,dc=example,dc=org
+      objectClass: simpleSecurityObject
+      objectClass: organizationalRole
+      cn: user3
+      userpassword: {SSHA}Qu1FW7BdLMndwM/Gf+zc3a8VIMAymbuv
+
+      dn: cn=developers,ou=groups,dc=example,dc=org
+      changetype: modify
+      add: member
+      member: cn=user1,dc=example,dc=org
+      member: cn=user3,dc=example,dc=org
+
+      dn: cn=QA,ou=groups,dc=example,dc=org
+      changetype: modify
+      add: member
+      member: cn=user2,dc=example,dc=org
+      member: cn=user3,dc=example,dc=org
+
+## ldap configuration used in oes-gate & oes-platform for authentication
+## and authorization
+ldap:
+  enabled: true
+  url: ldap://{{ .Release.Name }}-openldap:389
+  userDnPattern: cn={0}
+  basedn: dc=example,dc=org # Value of ldap.base.dn
+  adminDn: cn=admin,dc=example,dc=org
+  adminPassword: opsmxadmin123
+  userDisplayName: displayName
+  pattern: (&(cn=USERNAME))
+  userGroupIdentity: memberOf
+  userIdentity: cn
+  userPrepend: cn=USERNAME

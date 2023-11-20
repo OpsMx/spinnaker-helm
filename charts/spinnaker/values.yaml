@@ -378,7 +378,7 @@ securityContext:
   fsGroup: 1000
 
 
-installOpenLdap: true
+installOpenLdap: false
 ## OpenLDAP custom configuration; will override default configuration of
 ## openldap helm chart
 ##

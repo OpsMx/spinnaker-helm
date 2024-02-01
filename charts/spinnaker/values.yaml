@@ -94,6 +94,17 @@ halyard:
     #     podAnnotations:
     #       iam.amazonaws.com/role: <role_arn>
 
+  # Additional volumes available for use with Halyard initContainers and containers
+  additionalVolumes: []
+  #  - name: volume1
+  #    configMap:
+  #      name: configMap1
+
+  # Additional volumeMounts to add to Halyard containers
+  additionalVolumeMounts: []
+  #  - name: volumeMount1
+  #    mountPath: /volumeMount1
+
   ## Populate to provide a custom local BOM for Halyard to use for deployment. Read more for details:
   ## https://www.spinnaker.io/guides/operator/custom-boms/#boms-and-configuration-on-your-filesystem
   bom: ~

@@ -127,6 +127,9 @@ spec:
           subPath: cacerts
           name: cacerts
         {{- end }}
+        {{- if .Values.halyard.additionalVolumeMounts }}
+          {{- toYaml .Values.halyard.additionalVolumeMounts | nindent 8 }}
+        {{- end }}
         {{- if .Values.halyard.env }}
         env:
 {{ toYaml .Values.halyard.env | indent 8 }}
@@ -232,6 +235,9 @@ spec:
           name: {{ template "spinnaker.fullname" . }}-spin-secret-decoder
       {{- end }}
       {{- end }}
+      {{- if .Values.halyard.additionalVolumes }}
+        {{- toYaml .Values.halyard.additionalVolumes | nindent 6 }}
+      {{- end }}
       {{- if .Values.halyard.image.pullSecrets }}
       imagePullSecrets:
         {{- range .Values.halyard.image.pullSecrets }}
@@ -285,6 +291,9 @@ spec:
         - mountPath: /etc/ssl/certs/java/cacerts
           subPath: cacerts
           name: cacerts
+        {{- end }}
+        {{- if .Values.halyard.additionalVolumeMounts }}
+          {{- toYaml .Values.halyard.additionalVolumeMounts | nindent 8 }}
         {{- end }}
         {{- if .Values.halyard.env }}
         env:

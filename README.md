@@ -100,48 +100,14 @@ Alternatively, you can route traffic via Ingress/LB to the spin-deck and spin-ga
      git add -A; git commit -m"Upgrade related changes";git push
      ```
 
-- Create a K8s secret called opsmx-gitops-auth (Do not change the name of the secret)
+- Use minimal-values.yaml inside charts/spinnaker folder Ex: https://github.com/OpsMx/spinnaker-helm/blob/1.30.1/charts/spinnaker/minimal-values.yaml
 
-- Copy the below file and update the gituser, gittoken, and gitcloneparam (this includes username, token, organisation and git-repository) values.
+- Update the gitorg, gitrepo, gituser, dynaaccrepo, gittoken and save the minimal-values.yaml
 
-  Format of the secret: opsmx-gitops-auth’s yaml file
-
-  ```yaml
-  apiVersion: v1
-  kind: Secret
-  metadata:
-    name: opsmx-gitops-auth
-  stringData:
-    gitcloneparam: https://GIT_USERNAME:GIT_TOKEN@github.com/GIT_ORGANISATON/GIT_REPOSITORY.git
-    gittoken: xxxxxxxxxxxx
-    gituser: git-username
-  type: Opaque
-   ```
-
-  After updating the secret values(username, token, organisation and git-repository) looks as below
-
-  ```yaml
-  apiVersion: v1
-  kind: Secret
-  metadata:
-    name: opsmx-gitops-auth
-  stringData:
-    gitcloneparam: https://jhon:ghbzceqed_adsfasdf@github.com/john/gitops-halyard.git
-    gittoken: ghbzceqed_adsfasdf
-    gituser: jhon
-  type: Opaque
-   ```
-
-- Use below command to apply the secrets yaml
-  
-  ```console
-  kubectl -n opsmx-oss apply -f secret.yaml
-  ```
-
-- Use below command to upgrade oss to gitops method.
+- Use below command to install oss in gitops method.
 
   ```console
-  helm install oss-spin spinnaker/spinnaker --set halyard.gitops.enabled=true --timeout 600s -n opsmx-oss
+  helm install oss-spin spinnaker/spinnaker -f minimal-values.yaml --timeout 600s -n opsmx-oss
   ```
 
   **Note**: Make sure the same release name is used during installation.

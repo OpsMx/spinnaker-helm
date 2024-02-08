@@ -88,6 +88,9 @@ spec:
         secret:
           secretName: {{ template "spinnaker.fullname" .}}-s3
       {{- end }}
+      {{- if .Values.halyard.additionalVolumes }}
+        {{- toYaml .Values.halyard.additionalVolumes | nindent 6 }}
+      {{- end }}
       {{- if .Values.halyard.pullSecrets }}
       imagePullSecrets:
         {{- range .Values.halyard.image.pullSecrets }}
@@ -131,6 +134,9 @@ spec:
         {{- if and .Values.kubeConfig.enabled .Values.kubeConfig.secretName }}
         - name: kube-config
           mountPath: /opt/kube
+        {{- end }}
+        {{- if .Values.halyard.additionalVolumeMounts }}
+          {{- toYaml .Values.halyard.additionalVolumeMounts | nindent 8 }}
         {{- end }}
         command:
         - bash

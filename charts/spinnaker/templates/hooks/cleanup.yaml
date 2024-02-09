@@ -37,9 +37,13 @@ spec:
         - name: halyard-config
           mountPath: /opt/halyard/scripts
         command:
+        {{- if .Values.halyard.additionalSettings.cleanJobCmd }}
+          {{- toYaml .Values.halyard.additionalSettings.cleanJobCmd | nindent 8 }}
+        {{- else }}
         - bash
         - -xe
         - "/opt/halyard/scripts/clean.sh"
+        {{- end}}
     {{- if .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}

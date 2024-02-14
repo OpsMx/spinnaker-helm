@@ -104,6 +104,17 @@ halyard:
   #  - name: volumeMount1
   #    mountPath: /volumeMount1
 
+  additionalSettings:
+    # To override command used in insta-using-hal job
+    installJobCmd: []
+    # - echo
+    # - "Hello, World!"
+
+    # To override command used in cleanup job
+    cleanJobCmd: []
+    # - echo
+    # - "Hello, World!"
+
   ## Populate to provide a custom local BOM for Halyard to use for deployment. Read more for details:
   ## https://www.spinnaker.io/guides/operator/custom-boms/#boms-and-configuration-on-your-filesystem
   bom: ~

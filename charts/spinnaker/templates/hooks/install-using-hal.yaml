@@ -139,6 +139,10 @@ spec:
           {{- toYaml .Values.halyard.additionalVolumeMounts | nindent 8 }}
         {{- end }}
         command:
+        {{- if .Values.halyard.additionalSettings.installJobCmd }}
+          {{- toYaml .Values.halyard.additionalSettings.installJobCmd | nindent 8 }}
+        {{- else }}
         - bash
         - -xe
         - "/opt/halyard/scripts/install.sh"
+        {{- end }}

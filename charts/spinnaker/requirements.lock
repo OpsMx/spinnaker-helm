@@ -5,5 +5,8 @@ dependencies:
 - name: minio
   repository: ""
   version: 8.0.9
-digest: sha256:5db3b746b35da7650d252891fe7c2c73937ca36aeedbbcdd9fd665b7e4ac84a8
-generated: "2022-06-30T22:35:43.862113+02:00"
+- name: openldap
+  repository: ""
+  version: 1.2.3
+digest: sha256:d69f35cd3b43ee7f852949c6143f48907c864577c607523d00a44847671a3d7b
+generated: "2024-03-18T13:00:23.000414-07:00"

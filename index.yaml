@@ -3,6 +3,43 @@ entries:
   spinnaker:
   - apiVersion: v2
     appVersion: 1.30.1
+    created: "2024-03-28T13:17:15.81065135Z"
+    dependencies:
+    - condition: redis.enabled
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 16.13.1
+    - condition: minio.enabled
+      name: minio
+      repository: ""
+      version: 8.0.9
+    - condition: openldap.enabled
+      name: openldap
+      repository: ""
+      version: 1.2.3
+    description: Open source Spinnaker with v1.30.1 Gitops Support
+    digest: 1b1898010c9cc01dba1ebcfd4fba647c74329cc0e18153e446f6fe3d1f5fc515
+    home: http://spinnaker.io/
+    icon: https://pbs.twimg.com/profile_images/669205226994319362/O7OjwPrh_400x400.png
+    maintainers:
+    - email: srinivas@opsmx.io
+      name: ksrinimba
+    - email: mahesh.kota@opsmx.io
+      name: maheshopsmx
+    - email: saiteja.katabhatina@opsmx.io
+      name: saitejaopsmx
+    - email: abhinay.byrisetty@hotmail.com
+      name: abhinaybyrisetty
+    name: spinnaker
+    sources:
+    - https://github.com/spinnaker
+    - https://github.com/OpsMx/spinnaker-helm
+    - https://github.com/viglesiasce/images
+    urls:
+    - https://github.com/OpsMx/spinnaker-helm/releases/download/spinnaker-2.2.17/spinnaker-2.2.17.tgz
+    version: 2.2.17
+  - apiVersion: v2
+    appVersion: 1.30.1
     created: "2024-02-15T08:09:14.430553379Z"
     dependencies:
     - condition: redis.enabled
@@ -208,4 +245,4 @@ entries:
     urls:
     - https://github.com/OpsMx/spinnaker-helm/releases/download/spinnaker-2.2.10/spinnaker-2.2.10.tgz
     version: 2.2.10
-generated: "2024-02-15T08:09:14.430581641Z"
+generated: "2024-03-28T13:17:15.810685964Z"

@@ -12,7 +12,7 @@ halyard:
 #####################################################################################
   image:
     repository: us-docker.pkg.dev/spinnaker-community/docker/halyard
-    tag: 1.45.0
+    tag: 1.51.0
   additionalServiceSettings:
     gate.yml:
       healthEndpoint: /health

@@ -15,7 +15,7 @@ halyard:
       username: GIT_USERNAME  # Username to authenticate with git/stash repo
       token: GIT_TOKEN
   # If spinnakerVersion is not specified appVersion in Chart.yml is chosen for Spinnaker
-  spinnakerVersion: 1.30.1
+  spinnakerVersion: 1.33.0
   image:
     repository: us-docker.pkg.dev/spinnaker-community/docker/halyard
-    tag: 1.45.0
+    tag: 1.51.0

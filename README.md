@@ -100,7 +100,7 @@ Alternatively, you can route traffic via Ingress/LB to the spin-deck and spin-ga
      git add -A; git commit -m"Upgrade related changes";git push
      ```
 
-- Use minimal-values.yaml inside charts/spinnaker folder Ex: https://github.com/OpsMx/spinnaker-helm/blob/1.30.1/charts/spinnaker/minimal-values.yaml
+- Use minimal-values.yaml inside charts/spinnaker folder Ex: https://github.com/OpsMx/spinnaker-helm/blob/1.33.0/charts/spinnaker/minimal-values.yaml
 
 - Update the gitorg, gitrepo, gituser, dynaaccrepo, gittoken and save the minimal-values.yaml
 

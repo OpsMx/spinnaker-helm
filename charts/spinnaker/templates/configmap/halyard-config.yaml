@@ -9,7 +9,7 @@ data:
     #!/bin/bash
 
     # Wait for the Hal daemon to be ready
-    {{- if or (semverCompare "<=1.26.6" .Chart.AppVersion) (semverCompare "<1.45.0" .Values.halyard.image.tag) }}
+    {{- if or (semverCompare "<=1.26.6" .Chart.AppVersion) (semverCompare "<1.51.0" .Values.halyard.image.tag) }}
     export DAEMON_ENDPOINT=http://{{ template "spinnaker.fullname" . }}-halyard:8064
     export HAL_COMMAND="hal --daemon-endpoint $DAEMON_ENDPOINT"
     until $HAL_COMMAND --ready; do sleep 10 ; done

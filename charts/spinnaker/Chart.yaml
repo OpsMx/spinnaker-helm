@@ -1,7 +1,7 @@
 apiVersion: v2
 description: Open source Spinnaker with v1.33.0 Gitops Support
 name: spinnaker
-version: 2.2.17
+version: 2.2.18
 appVersion: 1.33.0
 home: http://spinnaker.io/
 sources:

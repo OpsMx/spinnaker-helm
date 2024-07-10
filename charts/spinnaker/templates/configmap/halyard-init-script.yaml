@@ -8,7 +8,7 @@ data:
   init.sh: |
     #!/bin/bash
     {{- if .Values.halyard.gitops.enabled }}
-    {{- if and (.Values.halyard.gitops.enabled) (eq .Values.halyard.gitops.repo.type "git") }}
+    {{- if or (eq .Values.halyard.gitops.repo.type "stash") (eq .Values.halyard.gitops.repo.type "git") }}
     rm -rf /tmp/spinnaker/.hal
     secret=$(kubectl get secret opsmx-gitops-auth -n {{ .Release.Namespace }} | awk '{print $1}' | tail -n +2)
     if [[ "$secret" == "opsmx-gitops-auth" ]]; then

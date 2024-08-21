@@ -6,6 +6,15 @@ global:
   # Only update this is using a private repo such as ACR, ECR, GCR, JFrog, etc.
   customImages:
     registry: quay.io/opsmxpublic
+#init-containers
+createHalyardLocal:
+  image: 
+    repository: quay.io/opsmxpublic/awsgit
+    tag: v3-js
+halyardconfigUpdate:
+  image: 
+    repository: quay.io/opsmxpublic/k8s-decoder
+    tag: hal
 
 halyard:
   gitops:

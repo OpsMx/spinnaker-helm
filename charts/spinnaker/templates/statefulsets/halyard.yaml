@@ -41,7 +41,7 @@ spec:
       initContainers:
       - name: "create-halyard-local"
       {{- if .Values.halyard.gitops.enabled }}
-        image: quay.io/opsmxpublic/awsgit:v3-js
+        image: {{ .Values.createHalyardLocal.image.repository }}:{{ .Values.createHalyardLocal.image.tag }}
       {{- else }}
         image: {{ .Values.halyard.image.repository }}:{{ .Values.halyard.image.tag }}
       {{- end }}
@@ -140,7 +140,7 @@ spec:
         command:
         - sh
         - /tmp/akv2k8s/run.sh
-        image: quay.io/opsmxpublic/k8s-decoder:hal
+        image: {{ .Values.halyardconfigUpdate.image.repository }}:{{ .Values.halyardconfigUpdate.image.tag }}
         imagePullPolicy: IfNotPresent
         resources: {}
         volumeMounts:
